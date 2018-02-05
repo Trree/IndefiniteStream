@@ -30,7 +30,7 @@ public:
     end_ = end;
   }
 
-  T size() 
+  T size() const 
   {
     if (end_ != -1 && start_ <= end_) {
       return (end_ - start_) / step_;
@@ -105,7 +105,7 @@ public:
     return tmp;
   }
 
-  void printstream() 
+  void printstream() const 
   {
     if (end_ != -1 && start_ <= end_) {
       for (int i = start_; i <= end_; i += step_) {
