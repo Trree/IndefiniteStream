@@ -2,6 +2,7 @@
 #include "doctest.h"
 #include "../indefinite-stream.hpp"
 
+using namespace indefinite;
 // It would be overflow_error
 TEST_CASE("testing the indefinite one step function") {
   IndefiniteStream<int> a(3);

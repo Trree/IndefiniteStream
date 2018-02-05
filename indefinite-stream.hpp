@@ -2,6 +2,8 @@
 #include <vector>
 #include <functional>
 
+namespace indefinite{
+
 typedef std::vector<std::function<bool (const int&)>> filter_handler;
 
 template<class T = int> class IndefiniteStream {
@@ -26,17 +28,11 @@ public:
   IndefiniteStream& range(T start, T end) {
     start_ = start;
     end_ = end;
-    return *this;
   }
 
-  IndefiniteStream& limit(std::size_t size) {
-    end_ = start_ + size * step_;
-    return *this;
-  }
-
-  std::size_t size() 
+  T size() 
   {
-    if (end_ != -1 && end_ >= start_) {
+    if (end_ != -1 && start_ <= end_) {
       return (end_ - start_) / step_;
     }
     else {
@@ -44,17 +40,32 @@ public:
     }
   }
 
+  IndefiniteStream& filter(std::function<bool (const T&)> f) 
+  {
+    filters_.push_back(f);
+    return *this;
+  }
+
+  T handler_filer(T value)
+  {
+    auto it = filters_.begin();
+    for(; it != filters_.end(); it++) {
+      if (!(*it)(value)) {
+        return -1;
+      }
+    }
+    if (it == filters_.end()) {
+      return value;
+    }
+    return -1;
+  }
+
   T top() 
   {
     if (end_ == -1 || start_ < end_) {
       for (auto i = start_; ; i += step_) {
-        auto it = filters_.begin();
-        for(; it != filters_.end(); it++) {
-          if (!(*it)(i)) {
-            break;
-          }
-        }
-        if (it == filters_.end()) {
+        auto value = handler_filer(i);
+        if (value != -1) {
           start_ = i;
           return i;
         }
@@ -67,14 +78,9 @@ public:
   {
     if (end_ == -1 || start_ < end_) {
       for (auto i = start_; ; i += step_) {
-        auto it = filters_.begin();
-        for(; it != filters_.end(); it++) {
-          if (!(*it)(i)) {
-            break;
-          }
-        }
-        if (it == filters_.end()) {
-          start_ = i+step_;
+        auto value = handler_filer(i);
+        if (value != -1) {
+          start_ = i + step_;
           return i;
         }
       }
@@ -82,13 +88,26 @@ public:
     return -1;
   }
 
-  IndefiniteStream& filter(std::function<bool (const T&)> f) {
-    filters_.push_back(f);
-    return *this;
+  std::vector<T> limit(T size) 
+  {
+    std::vector<T> tmp;
+    tmp.reserve(size);
+    auto i = start_;
+    auto j = 0;
+    while ((end_ == -1 || (i <= end_)) && j < size) {
+      auto value = handler_filer(i);
+      if (value != -1) {
+        tmp.push_back(i);
+        j++;
+      }
+      i = i + step_;
+    }
+    return tmp;
   }
 
-  void printstream() {
-    if (end_ != -1 && end_ >= start_) {
+  void printstream() 
+  {
+    if (end_ != -1 && start_ <= end_) {
       for (int i = start_; i <= end_; i += step_) {
         auto it = filters_.begin();
         for(; it != filters_.end(); it++) {
@@ -107,7 +126,6 @@ public:
     }
   }
 
-
 private:
   T start_ = 0;
   T step_ = 1;
@@ -115,4 +133,4 @@ private:
   filter_handler filters_;
 };
 
-
+} // name namespace indefinite
