@@ -10,7 +10,7 @@ public:
   IndefiniteStream(T start) : start_(start), end_(-1) {}
   IndefiniteStream(T start, filter_handler filter) : start_(start), end_(-1), filters_(filter) {} 
   IndefiniteStream(T start, T step, filter_handler filter) : start_(start), step_(step), end_(-1), filters_(filter) {} 
-  IndefiniteStream(T start, T end) : start_(start), end_(end) {}
+  IndefiniteStream(T start, T step) : start_(start), step_(step) {}
   IndefiniteStream(T start, T step, T end) : start_(start), step_(step), end_(end) {}
   IndefiniteStream(T start, T step, T end, filter_handler filter) : start_(start), step_(step), end_(end), filters_(filter) {}
   ~IndefiniteStream() {}
@@ -34,15 +34,59 @@ public:
     return *this;
   }
 
-  std::size_t size() {
+  std::size_t size() 
+  {
     if (end_ != -1 && end_ >= start_) {
       return (end_ - start_) / step_;
     }
     else {
       return -1;
     }
-  } 
+  }
+
+  T top() 
+  {
+    if (end_ == -1 || start_ < end_) {
+      for (auto i = start_; ; i += step_) {
+        auto it = filters_.begin();
+        for(; it != filters_.end(); it++) {
+          if (!(*it)(i)) {
+            break;
+          }
+        }
+        if (it == filters_.end()) {
+          start_ = i;
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
   
+  T next() 
+  {
+    if (end_ == -1 || start_ < end_) {
+      for (auto i = start_; ; i += step_) {
+        auto it = filters_.begin();
+        for(; it != filters_.end(); it++) {
+          if (!(*it)(i)) {
+            break;
+          }
+        }
+        if (it == filters_.end()) {
+          start_ = i+step_;
+          return i;
+        }
+      }
+    }
+    return -1;
+  }
+
+  IndefiniteStream& filter(std::function<bool (const T&)> f) {
+    filters_.push_back(f);
+    return *this;
+  }
+
   void printstream() {
     if (end_ != -1 && end_ >= start_) {
       for (int i = start_; i <= end_; i += step_) {
@@ -63,29 +107,6 @@ public:
     }
   }
 
-  IndefiniteStream& next() {
-    if (end_ == -1 || start_ < end_) {
-      for (auto i = start_; ; i += step_) {
-        auto it = filters_.begin();
-        for(; it != filters_.end(); it++) {
-          if (!(*it)(i)) {
-            break;
-          }
-        }
-        if (it == filters_.end()) {
-          std::cout << i << '\n';
-          start_ = i+step_;
-          break;
-        }
-      }
-    }
-    return *this;
-  }
-
-  IndefiniteStream& filter(std::function<bool (const T&)> f) {
-    filters_.push_back(f);
-    return *this;
-  }
 
 private:
   T start_ = 0;
