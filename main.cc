@@ -3,8 +3,7 @@
 int main()
 {
   filter_handler f;
-  f.push_back([](int value){ return (value % 3 == 0); });
-  IndefiniteStream<int> a(3, 2, f);
+  IndefiniteStream<int> a(3);
   a.filter([](int value) {return (value % 5 == 0);}).filter([](int value) {return (value % 9 == 0);});
   a.next();
   a.next();

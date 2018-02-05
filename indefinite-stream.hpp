@@ -26,10 +26,12 @@ public:
   IndefiniteStream& range(T start, T end) {
     start_ = start;
     end_ = end;
+    return *this;
   }
 
   IndefiniteStream& limit(std::size_t size) {
     end_ = start_ + size * step_;
+    return *this;
   }
 
   std::size_t size() {
