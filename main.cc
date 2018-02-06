@@ -6,7 +6,7 @@ using namespace indefinite;
 
 int main()
 {
-  IndefiniteStream<int> a(Start(3));
+  IndefiniteStream<int> a(Start<int>(3));
   a.filter(
     [](int value) {
       return (value % 5 == 0);
@@ -26,7 +26,7 @@ int main()
   
   int size = 10;
   std::cout << "Get " << size << " numbers: " << '\n';
-  indefinite::IndefiniteStream<int> b(Start(2), Step(5));
+  indefinite::IndefiniteStream<int> b(Start<int>(2), Step<int>(5));
   std::vector<int> v = b.filter(
     [](int value) {
       return (value % 7 == 0);
