@@ -5,7 +5,6 @@
 
 namespace indefinite{
 
-template<class T> using filter_handler = std::vector<std::function<bool (const int&)>>;
 template<class T> using Start = NamedType<int, struct StartParameter>;
 template<class T> using Step = NamedType<int, struct StepParameter>;
 template<class T> using End = NamedType<int, struct EndParameter>;
@@ -14,7 +13,7 @@ template<class T = int>
 class IndefiniteStream {
 
 public:
-  using filter_handler = filter_handler<T>;
+  using filter_handler = std::vector<std::function<bool (const T&)>>;
   using Start = Start<T>;
   using Step = Step<T>;
   using End = End<T>;
