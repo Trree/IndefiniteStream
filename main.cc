@@ -36,7 +36,8 @@ int main()
        return (value % 11 == 0);
      })
    .limit(size);
-  std::for_each(v.begin(), v.end(), [](int value){ std::cout << value << ' '; });
+  std::for_each(v.begin(), v.end(), 
+                [](int value){ std::cout << value << ' '; });
 
   return 0;
 }
