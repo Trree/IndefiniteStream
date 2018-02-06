@@ -4,17 +4,18 @@
 
 namespace indefinite{
 
-using filter_handler = std::vector<std::function<bool (const int&)>>;
+template<class T>
+using filter_handler = std::vector<std::function<bool (const T&)>>;
 
 template<class T = int> class IndefiniteStream {
 public:
   IndefiniteStream() : start_(0), end_(-1) {}
   IndefiniteStream(T start) : start_(start), end_(-1) {}
-  IndefiniteStream(T start, filter_handler filter) : start_(start), end_(-1), filters_(filter) {} 
-  IndefiniteStream(T start, T step, filter_handler filter) : start_(start), step_(step), end_(-1), filters_(filter) {} 
+  IndefiniteStream(T start, filter_handler<T> filter) : start_(start), end_(-1), filters_(filter) {} 
+  IndefiniteStream(T start, T step, filter_handler<T> filter) : start_(start), step_(step), end_(-1), filters_(filter) {} 
   IndefiniteStream(T start, T step) : start_(start), step_(step) {}
   IndefiniteStream(T start, T step, T end) : start_(start), step_(step), end_(end) {}
-  IndefiniteStream(T start, T step, T end, filter_handler filter) : start_(start), step_(step), end_(end), filters_(filter) {}
+  IndefiniteStream(T start, T step, T end, filter_handler<T> filter) : start_(start), step_(step), end_(end), filters_(filter) {}
   ~IndefiniteStream() {}
 
   IndefiniteStream& from(T t) {
@@ -130,7 +131,7 @@ private:
   T start_ = 0;
   T step_ = 1;
   T end_  = -1;
-  filter_handler filters_;
+  filter_handler<T> filters_;
 };
 
 } // name namespace indefinite
