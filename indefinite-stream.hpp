@@ -4,7 +4,7 @@
 
 namespace indefinite{
 
-typedef std::vector<std::function<bool (const int&)>> filter_handler;
+using filter_handler = std::vector<std::function<bool (const int&)>>;
 
 template<class T = int> class IndefiniteStream {
 public:
@@ -74,7 +74,7 @@ public:
     return -1;
   }
   
-  T next() 
+  T pop() 
   {
     if (end_ == -1 || start_ < end_) {
       for (auto i = start_; ; i += step_) {
