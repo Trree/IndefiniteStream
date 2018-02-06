@@ -5,37 +5,37 @@
 using namespace indefinite;
 // It would be overflow_error
 TEST_CASE("testing the indefinite one step function") {
-  IndefiniteStream<int> a(3);
-  CHECK(a.next() == 3);
-  CHECK(a.next() == 4);
+  IndefiniteStream<int> a(Start<int>(3));
+  CHECK(a.pop() == 3);
+  CHECK(a.pop() == 4);
 }
 
 TEST_CASE("testing the indefinite multi step function") {
-  IndefiniteStream<int> a(3, 5);
-  CHECK(a.next() == 3);
-  CHECK(a.next() == 8);
+  IndefiniteStream<int> a(Start<int>(3), Step<int>(5));
+  CHECK(a.pop() == 3);
+  CHECK(a.pop() == 8);
 }
 
 
 TEST_CASE("testing the indefinite filter function") {
-  IndefiniteStream<int> a(3);
+  IndefiniteStream<int> a(Start<int>(3));
   a.filter([](int value) {return ( value % 7 == 0);});
-  CHECK(a.next() == 7);
-  CHECK(a.next() == 14);
+  CHECK(a.pop() == 7);
+  CHECK(a.pop() == 14);
 }
 
 TEST_CASE("testing the indefinite range test function") {
-  IndefiniteStream<int> a(3, 5);
+  IndefiniteStream<int> a(Start<int>(3), Step<int>(5));
   a.filter([](int value) {return (value % 7 == 0);});
-  CHECK(a.next() == 28);
-  CHECK(a.next() == 63);
+  CHECK(a.pop() == 28);
+  CHECK(a.pop() == 63);
 }
 
 
 TEST_CASE("testing the indefinite multi filter function") {
-  IndefiniteStream<int> a(3);
+  IndefiniteStream<int> a(Start<int>(3));
   a.filter([](int value) {return (value % 2 == 0);}).filter([](int value) {return (value % 7 == 0);});
-  CHECK(a.next() == 14);
-  CHECK(a.next() == 28);
+  CHECK(a.pop() == 14);
+  CHECK(a.pop() == 28);
 }
 
