@@ -1,40 +1,46 @@
 #include <iostream>
 #include <vector>
 #include <functional>
+#include "NamedType.hpp"
 
 namespace indefinite{
 
-template<class T>
-using filter_handler = std::vector<std::function<bool (const T&)>>;
+using filter_handler = std::vector<std::function<bool (const int&)>>;
+using Start = NamedType<int, struct StartParameter>;
+using Step = NamedType<int, struct StepParameter>;
+using End = NamedType<int, struct EndParameter>;
 
-template<class T = int> class IndefiniteStream {
+template<class T = int> 
+class IndefiniteStream {
+
 public:
-  IndefiniteStream() : start_(0), end_(-1) {}
-  IndefiniteStream(T start) : start_(start), end_(-1) {}
-  IndefiniteStream(T start, filter_handler<T> filter) : start_(start), end_(-1), filters_(filter) {} 
-  IndefiniteStream(T start, T step, filter_handler<T> filter) : start_(start), step_(step), end_(-1), filters_(filter) {} 
-  IndefiniteStream(T start, T step) : start_(start), step_(step) {}
-  IndefiniteStream(T start, T step, T end) : start_(start), step_(step), end_(end) {}
-  IndefiniteStream(T start, T step, T end, filter_handler<T> filter) : start_(start), step_(step), end_(end), filters_(filter) {}
+
+  IndefiniteStream() {}
+  IndefiniteStream(Start start) : start_(start) {}
+  IndefiniteStream(Start start, filter_handler filter) : start_(start), filters_(filter) {} 
+  IndefiniteStream(Start start, Step step, filter_handler filter) : start_(start), step_(step), filters_(filter) {} 
+  IndefiniteStream(Start start, Step step) : start_(start), step_(step) {}
+  IndefiniteStream(Start start, Step step, End end) : start_(start), step_(step), end_(end) {}
+  IndefiniteStream(Start start, Step step, End end, filter_handler filter) : start_(start), step_(step), end_(end), filters_(filter) {}
   ~IndefiniteStream() {}
 
-  IndefiniteStream& from(T t) {
-    start_ = t;
+  IndefiniteStream& from(Start start) {
+    start_ = start;
   }
-  IndefiniteStream& from(T t, T step) {
-    start_ = t;
+  IndefiniteStream& from(Start start, Step step) {
+    start_ = start;
     step_ = step;
   }
 
-  IndefiniteStream& range(T start, T end) {
+  IndefiniteStream& range(Start start, End end) {
     start_ = start;
     end_ = end;
   }
 
   T size() const 
   {
-    if (end_ != -1 && start_ <= end_) {
-      return (end_ - start_) / step_;
+    if (end_.get() != -1 && start_.get() <= end_.get()) {
+      return (end_.get() - start_.get()) / step_.get();
     }
     else {
       return -1;
@@ -63,11 +69,11 @@ public:
 
   T top() 
   {
-    if (end_ == -1 || start_ < end_) {
-      for (auto i = start_; ; i += step_) {
+    if (end_.get() == -1 || start_.get() < end_.get()) {
+      for (auto i = start_.get(); ; i += step_.get()) {
         auto value = handler_filer(i);
         if (value != -1) {
-          start_ = i;
+          start_.get() = i;
           return i;
         }
       }
@@ -77,11 +83,11 @@ public:
   
   T pop() 
   {
-    if (end_ == -1 || start_ < end_) {
-      for (auto i = start_; ; i += step_) {
+    if (end_.get() == -1 || start_.get() < end_.get()) {
+      for (auto i = start_.get(); ; i += step_.get()) {
         auto value = handler_filer(i);
         if (value != -1) {
-          start_ = i + step_;
+          start_.get() = i + step_.get();
           return i;
         }
       }
@@ -93,23 +99,23 @@ public:
   {
     std::vector<T> tmp;
     tmp.reserve(size);
-    auto i = start_;
+    auto i = start_.get();
     auto j = 0;
-    while ((end_ == -1 || (i <= end_)) && j < size) {
+    while ((end_.get() == -1 || (i <= end_.get())) && j < size) {
       auto value = handler_filer(i);
       if (value != -1) {
         tmp.push_back(i);
         j++;
       }
-      i = i + step_;
+      i = i + step_.get();
     }
     return tmp;
   }
 
   void printstream() const 
   {
-    if (end_ != -1 && start_ <= end_) {
-      for (int i = start_; i <= end_; i += step_) {
+    if (end_.get() != -1 && start_.get() <= end_.get()) {
+      for (int i = start_.get(); i <= end_.get(); i += step_.get()) {
         auto it = filters_.begin();
         for(; it != filters_.end(); it++) {
           if (!(*it)(i)) {
@@ -128,10 +134,10 @@ public:
   }
 
 private:
-  T start_ = 0;
-  T step_ = 1;
-  T end_  = -1;
-  filter_handler<T> filters_;
+  Start start_ = Start(0) ;
+  Step step_ = Step(1);
+  End end_ = End(-1);
+  filter_handler filters_;
 };
 
 } // name namespace indefinite

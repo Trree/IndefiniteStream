@@ -2,9 +2,11 @@
 #include <vector>
 #include <algorithm>
 
+using namespace indefinite;
+
 int main()
 {
-  indefinite::IndefiniteStream<int> a(3);
+  IndefiniteStream<int> a(Start(3));
   a.filter(
     [](int value) {
       return (value % 5 == 0);
@@ -24,7 +26,7 @@ int main()
   
   int size = 10;
   std::cout << "Get " << size << " numbers: " << '\n';
-  indefinite::IndefiniteStream<int> b(2, 5);
+  indefinite::IndefiniteStream<int> b(Start(2), Step(5));
   std::vector<int> v = b.filter(
     [](int value) {
       return (value % 7 == 0);
