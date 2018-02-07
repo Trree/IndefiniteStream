@@ -5,17 +5,14 @@
 
 namespace indefinite {
 
-template <class T> using Start = NamedType<int, struct StartParameter>;
-template <class T> using Step = NamedType<int, struct StepParameter>;
-template <class T> using End = NamedType<int, struct EndParameter>;
-
 template <class T = int> class IndefiniteStream {
 
 public:
   using filter_handler = std::vector<std::function<bool(const T &)>>;
-  using Start = Start<T>;
-  using Step = Step<T>;
-  using End = End<T>;
+  using scale_handler = std::vector<std::function<T(const T &)>>;
+  using Start = NamedType<int, struct StartParameter>;
+  using Step = NamedType<int, struct StepParameter>;
+  using End = NamedType<int, struct EndParameter>;
 
   IndefiniteStream() {}
   IndefiniteStream(Start start) : start_(start) {}
@@ -41,14 +38,15 @@ public:
     end_ = end;
   }
 
-  IndefiniteStream &scale() {
-    
-  }
-
   IndefiniteStream &filter(std::function<bool(const T &)> f) {
     filters_.push_back(f);
     return *this;
   }
+  IndefiniteStream &scale(std::function<T(const T &)> f) {
+    scales_.push_back(f);
+    return *this;
+  }
+
 
   T handler_filer(T value) {
     auto it = filters_.begin();
@@ -63,13 +61,20 @@ public:
     return -1;
   }
 
+  T handler_scale(T value) {
+    for (auto scale : scales_) {
+      value = scale(value);
+    }
+    return value;
+  }
+
   T top() {
     if (end_.get() == -1 || start_.get() < end_.get()) {
       for (auto i = start_.get();; i += step_.get()) {
         auto value = handler_filer(i);
         if (value != -1) {
           start_.get() = i;
-          return i;
+          return handler_scale(i);
         }
       }
     }
@@ -82,7 +87,7 @@ public:
         auto value = handler_filer(i);
         if (value != -1) {
           start_.get() = i + step_.get();
-          return i;
+          return handler_scale(i);
         }
       }
     }
@@ -97,7 +102,7 @@ public:
     while ((end_.get() == -1 || (i <= end_.get())) && j < size) {
       auto value = handler_filer(i);
       if (value != -1) {
-        tmp.push_back(i);
+        tmp.push_back(handler_scale(i));
         j++;
       }
       i = i + step_.get();
@@ -105,17 +110,12 @@ public:
     return tmp;
   }
 
-  void printstream() const {
+  void handlerPrint (End end){
     if (end_.get() != -1 && start_.get() <= end_.get()) {
       for (int i = start_.get(); i <= end_.get(); i += step_.get()) {
-        auto it = filters_.begin();
-        for (; it != filters_.end(); it++) {
-          if (!(*it)(i)) {
-            break;
-          }
-        }
-        if (it == filters_.end()) {
-          std::cout << i << ' ';
+        auto value = handler_filer(i);
+        if (value != -1) {
+          std::cout << handler_scale(i) << ' ';
         }
       }
       std::cout << '\n';
@@ -123,12 +123,21 @@ public:
       return;
     }
   }
+  
+  void printStream() const {
+    handlerPrint(end_);
+  }
+
+  void printStream(End end) const {
+    handlerPrint(end);
+  }
 
 private:
   Start start_ = Start(0);
   Step step_ = Step(1);
   End end_ = End(-1);
   filter_handler filters_;
+  scale_handler scales_;
 };
 
 } // namespace indefinite
