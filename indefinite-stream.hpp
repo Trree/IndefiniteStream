@@ -51,33 +51,6 @@ public:
     return *this;
   }
 
-
-  T handler_filer(T value) {
-    auto it = filters_.begin();
-    for (; it != filters_.end(); it++) {
-      if (!(*it)(value)) {
-        return -1;
-      }
-    }
-    if (it == filters_.end()) {
-      return value;
-    }
-    return -1;
-  }
-
-  T handler_scale_before(T value) {
-    for (auto scale : scales_before_) {
-      value = scale(value);
-    }
-    return value;
-  }
-  T handler_scale_after(T value) {
-    for (auto scale : scales_after_) {
-      value = scale(value);
-    }
-    return value;
-  }
-
   T top() {
     if (end_.get() == -1 || start_.get() < end_.get()) {
       for (auto i = start_.get();; i += step_.get()) {
@@ -123,6 +96,41 @@ public:
     return tmp;
   }
 
+  void printStream() const {
+    handlerPrint(end_);
+  }
+
+  void printStream(End end) const {
+    handlerPrint(end);
+  }
+
+private:
+  T handler_filer(T value) {
+    auto it = filters_.begin();
+    for (; it != filters_.end(); it++) {
+      if (!(*it)(value)) {
+        return -1;
+      }
+    }
+    if (it == filters_.end()) {
+      return value;
+    }
+    return -1;
+  }
+
+  T handler_scale_before(T value) {
+    for (auto scale : scales_before_) {
+      value = scale(value);
+    }
+    return value;
+  }
+  T handler_scale_after(T value) {
+    for (auto scale : scales_after_) {
+      value = scale(value);
+    }
+    return value;
+  }
+
   void handlerPrint (End end){
     if (end_.get() != -1 && start_.get() <= end_.get()) {
       for (int i = start_.get(); i <= end_.get(); i += step_.get()) {
@@ -136,16 +144,7 @@ public:
       return;
     }
   }
-  
-  void printStream() const {
-    handlerPrint(end_);
-  }
 
-  void printStream(End end) const {
-    handlerPrint(end);
-  }
-
-private:
   Start start_ = Start(0);
   Step step_ = Step(1);
   End end_ = End(-1);
