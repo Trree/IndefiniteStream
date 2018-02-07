@@ -53,8 +53,7 @@ int main()
   std::cout << '\n';
 
   IndefiniteStream<int> s(IndefiniteStream<int>::Start(1));
-  std::vector<int> vs = s.limit(size);
-  auto sum = std::accumulate(vs.begin(), vs.end(), 0);
+  auto sum = s.accumulate(size, 0);
   std::cout << "Get 1-"<< size <<" sum: " << sum << '\n';
   std::cout << '\n';
 

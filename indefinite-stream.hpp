@@ -105,6 +105,23 @@ public:
     return tmp;
   }
 
+  T accumulate(T size, T init) {
+    auto i = start_.get();
+    auto j = 0;
+    while ((end_.get() == -1 || (i <= end_.get())) && j < size) {
+      auto value = handler_scale_before(i);
+      value = handler_filer(value);
+      if (value != -1) {
+        value = handler_scale_after(value);
+        init += value;
+        j++;
+      }
+      i = i + step_.get();
+    }
+    return init;
+
+  }
+
   IndefiniteStream& printStream() const {
     handlerPrint(end_);
     return *this;
