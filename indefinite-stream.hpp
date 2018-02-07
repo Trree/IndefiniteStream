@@ -42,8 +42,12 @@ public:
     filters_.push_back(f);
     return *this;
   }
-  IndefiniteStream &scale(std::function<T(const T &)> f) {
-    scales_.push_back(f);
+  IndefiniteStream &scale_before(std::function<T(const T &)> f) {
+    scales_before_.push_back(f);
+    return *this;
+  }
+  IndefiniteStream &scale_after(std::function<T(const T &)> f) {
+    scales_after_.push_back(f);
     return *this;
   }
 
@@ -61,8 +65,14 @@ public:
     return -1;
   }
 
-  T handler_scale(T value) {
-    for (auto scale : scales_) {
+  T handler_scale_before(T value) {
+    for (auto scale : scales_before_) {
+      value = scale(value);
+    }
+    return value;
+  }
+  T handler_scale_after(T value) {
+    for (auto scale : scales_after_) {
       value = scale(value);
     }
     return value;
@@ -71,10 +81,11 @@ public:
   T top() {
     if (end_.get() == -1 || start_.get() < end_.get()) {
       for (auto i = start_.get();; i += step_.get()) {
-        auto value = handler_filer(i);
+        auto value = handler_scale_before(i);
+        value = handler_filer(value);
         if (value != -1) {
           start_.get() = i;
-          return handler_scale(i);
+          return handler_scale_after(value);
         }
       }
     }
@@ -84,10 +95,11 @@ public:
   T pop() {
     if (end_.get() == -1 || start_.get() < end_.get()) {
       for (auto i = start_.get();; i += step_.get()) {
-        auto value = handler_filer(i);
+        auto value = handler_scale_before(i);
+        value = handler_filer(value);
         if (value != -1) {
           start_.get() = i + step_.get();
-          return handler_scale(i);
+          return handler_scale_after(value);
         }
       }
     }
@@ -100,9 +112,10 @@ public:
     auto i = start_.get();
     auto j = 0;
     while ((end_.get() == -1 || (i <= end_.get())) && j < size) {
-      auto value = handler_filer(i);
+      auto value = handler_scale_before(i);
+      value = handler_filer(value);
       if (value != -1) {
-        tmp.push_back(handler_scale(i));
+        tmp.push_back(handler_scale_after(value));
         j++;
       }
       i = i + step_.get();
@@ -115,7 +128,7 @@ public:
       for (int i = start_.get(); i <= end_.get(); i += step_.get()) {
         auto value = handler_filer(i);
         if (value != -1) {
-          std::cout << handler_scale(i) << ' ';
+          std::cout << handler_scale_after(value) << ' ';
         }
       }
       std::cout << '\n';
@@ -137,7 +150,8 @@ private:
   Step step_ = Step(1);
   End end_ = End(-1);
   filter_handler filters_;
-  scale_handler scales_;
+  scale_handler scales_before_;
+  scale_handler scales_after_;
 };
 
 } // namespace indefinite

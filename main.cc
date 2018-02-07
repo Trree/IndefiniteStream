@@ -7,7 +7,11 @@ using namespace indefinite;
 int main()
 {
   IndefiniteStream<int> a(IndefiniteStream<int>::Start(3));
-  a.filter(
+  a.scale_before(
+    [](int value) {
+      return value * 10;
+    }) 
+   .filter(
     [](int value) {
       return (value % 5 == 0);
     })
@@ -35,7 +39,7 @@ int main()
     [](int value) {
       return (value % 11 == 0);
     })
-  .scale(
+  .scale_after(
     [](int value) {
       return value * 10;
     }
