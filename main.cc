@@ -2,11 +2,13 @@
 #include <vector>
 #include <algorithm>
 #include <cmath>
+#include <numeric>
 
 using namespace indefinite;
 
 int main()
 {
+  std::cout << "stream[3]-> *10, divide 5, divide 9:" << '\n';
   IndefiniteStream<int> a(IndefiniteStream<int>::Start(3));
   a.scale_before(
     [](int value) {
@@ -21,15 +23,15 @@ int main()
        return (value % 9 == 0);
      });
 
-  std::cout << "One by one: " << '\n';
-  std::cout << a.top() << '\n';
-  std::cout << a.pop() << '\n';
-  std::cout << a.pop() << '\n';
-  std::cout << a.pop() << '\n';
-  std::cout << a.pop() << '\n';
+  std::cout << "top: "<<  a.top() << '\n';
+  std::cout << "pop: " << a.pop() << '\n';
+  std::cout << "pop: " << a.pop() << '\n';
+  std::cout << "pop: " << a.pop() << '\n';
+  std::cout << "pop: " << a.pop() << '\n';
   std::cout << '\n';
   
-  int size = 10;
+  int size = 100;
+  std::cout << "stream[2, 5]-> divide 7, divide 11, * 10:" << '\n';
   std::cout << "Get " << size << " numbers: " << '\n';
   indefinite::IndefiniteStream<int> b(IndefiniteStream<int>::Start(2), IndefiniteStream<int>::Step(5));
   std::vector<int> v = b.filter(
@@ -50,8 +52,13 @@ int main()
   std::cout << '\n';
   std::cout << '\n';
 
-  int primeslen = 100;
-  std::cout << "Get " << primeslen << " primes numbers: " << '\n';
+  IndefiniteStream<int> s(IndefiniteStream<int>::Start(1));
+  std::vector<int> vs = s.limit(size);
+  auto sum = std::accumulate(vs.begin(), vs.end(), 0);
+  std::cout << "Get 1-"<< size <<" sum: " << sum << '\n';
+  std::cout << '\n';
+
+  std::cout << "Get " << size << " primes numbers: " << '\n';
   IndefiniteStream<int> primes(IndefiniteStream<int>::Start(2));
   std::vector<int> vp = primes.filter(
     [](int value) {
@@ -69,7 +76,7 @@ int main()
       }
       return true;
     })
-    .limit(primeslen);
+    .limit(size);
     for (auto v : vp) {
       std::cout << v << ' ';
     }
