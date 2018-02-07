@@ -41,12 +41,8 @@ public:
     end_ = end;
   }
 
-  T size() const {
-    if (end_.get() != -1 && start_.get() <= end_.get()) {
-      return (end_.get() - start_.get()) / step_.get();
-    } else {
-      return -1;
-    }
+  IndefiniteStream &scale() {
+    
   }
 
   IndefiniteStream &filter(std::function<bool(const T &)> f) {
