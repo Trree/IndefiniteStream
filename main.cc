@@ -1,6 +1,7 @@
 #include "indefinite-stream.hpp"
 #include <vector>
 #include <algorithm>
+#include <cmath>
 
 using namespace indefinite;
 
@@ -42,11 +43,38 @@ int main()
   .scale_after(
     [](int value) {
       return value * 10;
-    }
-    )
+    })
    .limit(size);
   std::for_each(v.begin(), v.end(), 
                 [](int value){ std::cout << value << ' '; });
+  std::cout << '\n';
+  std::cout << '\n';
+
+  int primeslen = 100;
+  std::cout << "Get " << primeslen << " primes numbers: " << '\n';
+  IndefiniteStream<int> primes(IndefiniteStream<int>::Start(2));
+  std::vector<int> vp = primes.filter(
+    [](int value) {
+      if (value < 2) {
+        return false;
+      }
+      else if (value == 2) {
+        return true;
+      }
+      
+      for(int i = 2; i <= std::sqrt(value); ++i) {
+        if (value % i == 0) {
+          return false;
+        }
+      }
+      return true;
+    })
+    .limit(primeslen);
+    for (auto v : vp) {
+      std::cout << v << ' ';
+    }
+    std::cout << '\n';
+  
 
   return 0;
 }

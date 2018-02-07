@@ -7,7 +7,7 @@ When I read scip, I am so interesting in indefinite stream.
 So I implement it using cpp.
 
 
-## Stream and filter 
+## Stream , scale and filter 
 
 ```
                /--------+        |++++++++++++++++          /--------+

@@ -25,6 +25,14 @@ public:
       : start_(start), step_(step), end_(end) {}
   IndefiniteStream(Start start, Step step, End end, filter_handler filter)
       : start_(start), step_(step), end_(end), filters_(filter) {}
+  IndefiniteStream(Start start, Step step, End end, filter_handler filter,
+                   scale_handler scale_before, scale_handler scale_after)
+      : start_(start),
+        step_(step),
+        end_(end),
+        filters_(filter),
+        scales_before_(scale_before),
+        scales_after_(scale_after) {}
   ~IndefiniteStream() {}
 
   IndefiniteStream &from(Start start) { start_ = start; }
@@ -32,7 +40,6 @@ public:
     start_ = start;
     step_ = step;
   }
-
   IndefiniteStream &range(Start start, End end) {
     start_ = start;
     end_ = end;
@@ -58,7 +65,8 @@ public:
         value = handler_filer(value);
         if (value != -1) {
           start_.get() = i;
-          return handler_scale_after(value);
+          value = handler_scale_after(value);
+          return value;
         }
       }
     }
@@ -72,7 +80,8 @@ public:
         value = handler_filer(value);
         if (value != -1) {
           start_.get() = i + step_.get();
-          return handler_scale_after(value);
+          value = handler_scale_after(value);
+          return value;
         }
       }
     }
@@ -96,12 +105,14 @@ public:
     return tmp;
   }
 
-  void printStream() const {
+  IndefiniteStream& printStream() const {
     handlerPrint(end_);
+    return *this;
   }
 
-  void printStream(End end) const {
+  IndefiniteStream& printStream(End end) const {
     handlerPrint(end);
+    return *this;
   }
 
 private:
@@ -132,8 +143,8 @@ private:
   }
 
   void handlerPrint (End end){
-    if (end_.get() != -1 && start_.get() <= end_.get()) {
-      for (int i = start_.get(); i <= end_.get(); i += step_.get()) {
+    if (end.get() != -1 && start_.get() <= end.get()) {
+      for (int i = start_.get(); i <= end.get(); i += step_.get()) {
         auto value = handler_filer(i);
         if (value != -1) {
           std::cout << handler_scale_after(value) << ' ';
