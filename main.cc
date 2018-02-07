@@ -1,4 +1,4 @@
-#include "indefinite-stream.hpp"
+#include "indefinite_stream.hpp"
 #include <vector>
 #include <algorithm>
 #include <cmath>

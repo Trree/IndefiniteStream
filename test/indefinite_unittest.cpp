@@ -1,6 +1,6 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-#include "../indefinite-stream.hpp"
+#include "../indefinite_stream.hpp"
 
 using namespace indefinite;
 // It would be overflow_error

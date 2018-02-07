@@ -1,4 +1,4 @@
-#include "NamedType.hpp"
+#include "named_type.hpp"
 #include <functional>
 #include <iostream>
 #include <vector>
