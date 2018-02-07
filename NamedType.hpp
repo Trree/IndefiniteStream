@@ -1,5 +1,6 @@
 #include <type_traits>
 #include <cstddef>
+#include <algorithm>
 
 namespace indefinite{
 
