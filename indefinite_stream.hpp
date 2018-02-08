@@ -33,6 +33,10 @@ public:
         filters_(filter),
         scales_before_(scale_before),
         scales_after_(scale_after) {}
+  IndefiniteStream(const IndefiniteStream& ) = default;
+  IndefiniteStream(IndefiniteStream&& ) = default;
+  IndefiniteStream& operator=(const IndefiniteStream& ) = default;
+  IndefiniteStream& operator=(IndefiniteStream&& ) = default;
   ~IndefiniteStream() {}
 
   IndefiniteStream &from(Start start) { start_ = start; }

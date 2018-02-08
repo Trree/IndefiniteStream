@@ -9,7 +9,10 @@ using namespace indefinite;
 int main()
 {
   std::cout << "stream[3]-> *10, divide 5, divide 9:" << '\n';
-  IndefiniteStream<int> a(IndefiniteStream<int>::Start(3));
+  IndefiniteStream<int> a1(IndefiniteStream<int>::Start(3));
+  IndefiniteStream<int> a2(a1);
+  IndefiniteStream<int> a = std::move(a2);
+
   a.scale_before(
     [](int value) {
       return value * 10;
