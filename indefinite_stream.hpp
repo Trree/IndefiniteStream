@@ -5,6 +5,8 @@
 
 namespace indefinite {
 
+inline namespace v1 {
+
 template <class T = int> class IndefiniteStream {
 
 public:
@@ -185,4 +187,5 @@ private:
   scale_handler scales_after_;
 };
 
+} // namespace v1 
 } // namespace indefinite
